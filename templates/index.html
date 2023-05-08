@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quantum Genetic Algorithm</title>
+</head>
+<style type="text/css">
+    body {
+      text-align: center;
+      margin-top: 50px;
+      font-family: Arial, sans-serif;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .result-box {
+      width: 100px;
+      height: 100px;
+      margin: 5px;
+      display: inline-block;
+      border: 1px solid #333;
+    }
+
+    #result-boxes-container {
+      margin-top: 20px;
+    }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .slider-label {
+      margin-right: 10px;
+    }
+
+    #generation, #index {
+      -webkit-appearance: none;
+      width: 200px;
+      height: 10px;
+      border-radius: 5px;
+      background-color: #eee;
+      outline: none;
+      opacity: 0.7;
+      -webkit-transition: .2s;
+      transition: opacity .2s;
+    }
+
+    #generation::-webkit-slider-thumb, #index::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: #333;
+      cursor: pointer;
+    }
+
+    #generation::-moz-range-thumb, #index::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: #333;
+      cursor: pointer;
+    }
+
+    #generation-value, #index-value {
+      font-size: 16px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    #fitness-container {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+</style>
+<body>
+    <h1>Quantum Genetic Algorithm</h1>
+
+    <form>
+        <div class="slider-container">
+            <label class="slider-label" for="generation">Generation:</label>
+            <input type="range" id="generation" name="generation" min="0" max="{{ max_generation }}" value="0" step="1">
+            <span id="generation-value">1</span>
+        </div>
+
+        <div class="slider-container">
+            <label class="slider-label" for="index">Chromosome:</label>
+            <input type="range" id="index" name="index" min="0" max="{{ max_index }}" value="0" step="1">
+            <span id="index-value">0</span>
+        </div>
+
+        <input type="submit" value="Get Chromosome" style="display: none;">
+    </form>
+
+    <span id="fitness-container"></span>
+    <div id="result-boxes-container"></div>
+
+    <script>
+        var generationSlider = document.getElementById('generation');
+        var indexSlider = document.getElementById('index');
+        var resultBoxesContainer = document.getElementById('result-boxes-container');
+        var fitnessContainer = document.getElementById('fitness-container');
+        var generationValueLabel = document.getElementById('generation-value');
+        var indexValueLabel = document.getElementById('index-value');
+
+        // Add event listeners to the sliders
+        generationSlider.addEventListener('input', updateChromosome);
+        indexSlider.addEventListener('input', updateChromosome);
+
+        function createBox(transparency) {
+            var box = document.createElement('div');
+            box.className = 'result-box';
+            box.style.backgroundColor = 'rgba(0, 0, 0, ' + transparency + ')';
+            resultBoxesContainer.appendChild(box);
+        }
+
+        function updateChromosome() {
+            var generation = generationSlider.value;
+            var index = indexSlider.value;
+            var url = '/chromosome?generation=' + generation + '&index=' + index;
+
+            // Update the value labels
+            generationValueLabel.textContent = generation;
+            indexValueLabel.textContent = index;
+
+            // Send a GET request to the /chromosome endpoint with the selected values
+            fetch(url)
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    if ('chromosome' in data) {
+                        var chromosome = data.chromosome;
+                        resultBoxesContainer.innerHTML = ''; // Clear previous boxes
+                        chromosome.forEach(function(transparency) {
+                            createBox(transparency);
+                        });
+                    }
+                    if ('fitness' in data) {
+                        fitnessContainer.innerHTML = 'Fitness: ' + data.fitness;
+                    }
+                    if ('error' in data) {
+                        resultBoxesContainer.innerHTML = 'Error: ' + data.error;
+                    }
+                })
+                .catch(function(error) {
+                    console.log('Error:', error);
+                });
+        }
+    </script>
+</body>
+</html>

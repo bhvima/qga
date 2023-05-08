@@ -1,0 +1,48 @@
+# Ignore Python virtual environment files
+venv/
+
+# Ignore Flask-related files and directories
+instance/
+.env
+
+# Ignore C build files
+*.o
+*.out
+
+# Ignore compiled binaries
+*.exe
+*.dll
+
+# Ignore object files
+*.obj
+
+# Ignore editor and IDE files
+.vscode/
+*.swp
+*.swo
+*~
+
+# Ignore system files and folders
+.DS_Store
+Thumbs.db
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+
+# Ignore generated documentation
+docs/_build/
+
+# Ignore dependencies and package files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore generated files
+dist/
+build/
+*.egg-info/
+
+#Binary
+qga
